@@ -9,7 +9,7 @@
 3. try copying realsense repo instead of cloning -> make changes outside of docker image
 
 ## Following launch file works:
-'''
+```
 # Copyright (c) 2018 Intel Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -162,7 +162,7 @@ def generate_launch_description():
                 emulate_tty=True,
                 ),
         ])
-'''
+```
 
 
 # Docker for Intel Realsense cameras on ROS 2
