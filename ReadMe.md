@@ -1,7 +1,7 @@
 ## Changes to make it work with pointcloud 
-set pointcloud_enable to true 
-set color_width to 640
-set color_height to 320
++ set pointcloud_enable to true 
++ set color_width to 640
++ set color_height to 320
 
 ## Things to try
 1. make it work with ROS2 Humble
