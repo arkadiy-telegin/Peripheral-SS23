@@ -86,7 +86,6 @@ RUN apt-get update -y \
     ros-${ROS_DISTRO}-rviz2 \
  && mkdir src
 COPY docker/realsense-ros ./src
-COPY docker/multi_camera_launch.py src/realsense-ros/realsense2_camera/launch
 RUN apt-get install -y python3-rosdep \
  && source /opt/ros/${ROS_DISTRO}/setup.bash \
  && rm /etc/ros/rosdep/sources.list.d/20-default.list \
@@ -94,6 +93,7 @@ RUN apt-get install -y python3-rosdep \
  && rosdep update \
  && rosdep install -i --from-path src --rosdistro ${ROS_DISTRO} --skip-keys=librealsense2 -y \
  && colcon build
+COPY docker/multi_camera_launch.py /ros2_ws/src/realsense2_camera/launch
 ENV DEBIAN_FRONTEND=dialog
 
 # CMD [ "realsense-viewer" ]
