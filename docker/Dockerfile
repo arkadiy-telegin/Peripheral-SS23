@@ -86,6 +86,7 @@ RUN apt-get update -y \
     ros-${ROS_DISTRO}-rviz2 \
  && mkdir src
 COPY docker/realsense-ros ./src
+COPY docker/multi_camera_launch.py /ros2_ws/src/realsense2_camera/launch
 RUN apt-get install -y python3-rosdep \
  && source /opt/ros/${ROS_DISTRO}/setup.bash \
  && rm /etc/ros/rosdep/sources.list.d/20-default.list \
@@ -93,7 +94,10 @@ RUN apt-get install -y python3-rosdep \
  && rosdep update \
  && rosdep install -i --from-path src --rosdistro ${ROS_DISTRO} --skip-keys=librealsense2 -y \
  && colcon build
-COPY docker/multi_camera_launch.py /ros2_ws/src/realsense2_camera/launch
+RUN sudo apt-get install python3-opencv
+RUN echo "source /ros2_ws/install/setup.bash" >> ~/.bashrc
+COPY docker/launch.sh .
+RUN chmod +x /ros2_ws/launch.sh
 ENV DEBIAN_FRONTEND=dialog
-
-# CMD [ "realsense-viewer" ]
+ENTRYPOINT ["/ros2_ws/launch.sh"]
+# ENTRYPOINT [ "ros2 launch realsense2_camera multi_camera_launch.py" ]
