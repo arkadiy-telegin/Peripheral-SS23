@@ -34,8 +34,8 @@ class DepthSubscriber(Node):
             
                 
 
-        except CvBridgeError, e:
-            print e
+        except CvBridgeError as e:
+            print(e)
 
 
 def main(args=None):
