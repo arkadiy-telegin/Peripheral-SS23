@@ -31,11 +31,7 @@ RUN apt-get update \
 WORKDIR /usr/src
 # Get the latest tag of remote repository: https://stackoverflow.com/a/12704727
 # Needs to be a single command as ENV can't be set from Bash command: https://stackoverflow.com/questions/34911622/dockerfile-set-env-to-result-of-command
-RUN export LIBRS_GIT_TAG=`git -c 'versionsort.suffix=-' \
-                         ls-remote --exit-code --refs --sort='version:refname' --tags https://github.com/IntelRealSense/librealsense '*.*.*' \
-                         | tail --lines=1 \
-                         | cut --delimiter='/' --fields=3`; \
-    export LIBRS_VERSION=${LIBRS_VERSION:-${LIBRS_GIT_TAG#"v"}}; \
+RUN export LIBRS_VERSION=2.53.1; \
     curl https://codeload.github.com/IntelRealSense/librealsense/tar.gz/refs/tags/v${LIBRS_VERSION} -o librealsense.tar.gz; \
     tar -zxf librealsense.tar.gz; \
     rm librealsense.tar.gz; \
