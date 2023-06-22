@@ -91,6 +91,7 @@ RUN apt-get install -y python3-rosdep \
  && rosdep install -i --from-path src --rosdistro ${ROS_DISTRO} --skip-keys=librealsense2 -y \
  && colcon build
 RUN sudo apt-get install python3-opencv
+COPY docker/depth_handler /ros2_ws/src/depth_handler
 RUN echo "source /ros2_ws/install/setup.bash" >> ~/.bashrc
 COPY docker/launch.sh .
 RUN chmod +x /ros2_ws/launch.sh
