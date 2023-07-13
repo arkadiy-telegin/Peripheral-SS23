@@ -97,4 +97,4 @@ RUN echo "source /ros2_ws/install/setup.bash" >> ~/.bashrc
 COPY docker/launch.sh .
 RUN chmod +x /ros2_ws/launch.sh
 ENV DEBIAN_FRONTEND=dialog
-# ENTRYPOINT ["/ros2_ws/launch.sh"]
+ENTRYPOINT ["/ros2_ws/launch.sh"]

@@ -14,7 +14,7 @@ class DepthSubscriber(Node):
 
     def __init__(self):
 
-        super().__init__('minimal_subscriber')
+        super().__init__('depth_subscriber')
         self.min_dis = None
         self.distance_pub = self.create_publisher(Float64, 'obstacle_distance', 1)
         self.im_pub = self.create_publisher(Image, 'warn_image', 1)
@@ -79,14 +79,14 @@ class DepthSubscriber(Node):
 def main(args=None):
     rclpy.init(args=args)
 
-    minimal_subscriber = DepthSubscriber()
+    depth_subscriber = DepthSubscriber()
 
-    rclpy.spin(minimal_subscriber)
+    rclpy.spin(depth_subscriber)
 
     # Destroy the node explicitly
     # (optional - otherwise it will be done automatically
     # when the garbage collector destroys the node object)
-    minimal_subscriber.destroy_node()
+    depth_subscriber.destroy_node()
     rclpy.shutdown()
 
 
