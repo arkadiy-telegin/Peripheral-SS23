@@ -17,13 +17,14 @@ class DepthSubscriber(Node):
 
         super().__init__('pcd_subscriber')
 
-        self.threshold = 0.3
+        self.threshold = 0.4
+        self.min_threshold = 0.1
         self.a,self.b,self.c,self.d = self.parametrize_plane()
 
         self.pcd_pub = self.create_publisher(PointCloud2, 'warn_pcd', 1)
         self.depth_sub = self.create_subscription(
             PointCloud2,
-            '/camera1/depth/color/points',
+            '/camera2/depth/color/points',
             self.get_close_points,
             3)
 
@@ -33,17 +34,20 @@ class DepthSubscriber(Node):
         # self.get_logger().info('Image received')
         try:
             self.points = pc2.read_points_numpy(msg, skip_nans=True, field_names=("x", "y", "z"))
-            self.points = self.points[self.points[:,0]<1.2]
+            self.points = self.points[self.points[:,2]<0.7]
 
             self.calc_distance()
-            mask = self.distances < self.threshold
+            mask = self.distances < self.threshold 
+            mask_min = self.min_threshold < self.distances
             indices = np.where(mask)
+            indices_min = np.where(mask_min)
+            pub_indices = np.intersect1d(indices, indices_min)
 
             header = Header()
             header.stamp = self.get_clock().now().to_msg()
-            header.frame_id = 'camera1_link'
-            if self.points[indices,:].size != 0:
-                pc_pub = pc2.create_cloud_xyz32(header, self.points[indices,:])
+            header.frame_id = 'camera2_link'
+            if self.points[pub_indices,:].size != 0:
+                pc_pub = pc2.create_cloud_xyz32(header, self.points[pub_indices,:])
                 self.pcd_pub.publish(pc_pub)
 
         except CvBridgeError as e:
@@ -52,6 +56,7 @@ class DepthSubscriber(Node):
     def parametrize_plane(self):
         v1 = [0,1,0]
         v2 = [1,0,0]
+        # v2 = [np.sin(50), 0, np.cos(50)]
         point = [0,0,0]
         a,b,c = np.cross(v1, v2)
         d = np.dot([a,b,c], point)
