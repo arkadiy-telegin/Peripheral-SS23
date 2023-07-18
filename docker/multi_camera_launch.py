@@ -62,7 +62,7 @@ def generate_launch_description():
         ),
         IncludeLaunchDescription(
             PythonLaunchDescriptionSource([ThisLaunchFileDir(), '/rs_launch.py']),
-            launch_arguments={'camera_name': 'camera1', "serial_no":"_829212071844"}.items(),
+            launch_arguments={'camera_name': 'camera1', "serial_no":"_829212071844", "pointcloud.enable":"false"}.items(),
         ),
         # dummy static transformation from camera1 to camera2
         # launch_ros.actions.Node(
