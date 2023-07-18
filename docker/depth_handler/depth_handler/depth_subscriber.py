@@ -53,7 +53,7 @@ class DepthSubscriber(Node):
 
 
         rgb_arr = bridge.imgmsg_to_cv2(msg)
-        red_img  = np.full(np.shape(rgb_arr), (0,0,255), np.uint8)
+        red_img  = np.full(np.shape(rgb_arr), (255,0,0), np.uint8)
         # if self.min_dis != None and self.min_dis < 200:
         #     rgb_arr = cv.addWeighted(rgb_arr, 0.4, red_img, 0.6, 0)
         #     self.rgb_image = bridge.cv2_to_imgmsg(rgb_arr)
