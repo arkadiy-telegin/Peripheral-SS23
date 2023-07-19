@@ -1,7 +1,8 @@
 
 # Docker for Intel Realsense cameras on ROS 2
 
-Author: [Juan de los Rios](March 2023 - July 2023)
+Author: Juan de los Rios(March 2023 - July 2023)
+
 Fork from [https://github.com/2b-t](https://github.com/2b-t)
 
 [![Build](https://github.com/2b-t/realsense-ros2-docker/actions/workflows/build.yml/badge.svg)](https://github.com/2b-t/realsense-ros2-docker/actions/workflows/build.yml) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
