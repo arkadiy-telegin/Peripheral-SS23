@@ -1,4 +1,4 @@
-ARG BASE_IMAGE=ros:foxy-ros-base
+ARG BASE_IMAGE=ros:humble-perception
 
 # The following steps are based on the offical multi-stage build: https://github.com/IntelRealSense/librealsense/blob/master/scripts/Docker/Dockerfile
 #################################
@@ -31,15 +31,11 @@ RUN apt-get update \
 WORKDIR /usr/src
 # Get the latest tag of remote repository: https://stackoverflow.com/a/12704727
 # Needs to be a single command as ENV can't be set from Bash command: https://stackoverflow.com/questions/34911622/dockerfile-set-env-to-result-of-command
-RUN export LIBRS_GIT_TAG=`git -c 'versionsort.suffix=-' \
-                         ls-remote --exit-code --refs --sort='version:refname' --tags https://github.com/IntelRealSense/librealsense '*.*.*' \
-                         | tail --lines=1 \
-                         | cut --delimiter='/' --fields=3`; \
-    export LIBRS_VERSION=${LIBRS_VERSION:-${LIBRS_GIT_TAG#"v"}}; \
-    curl https://codeload.github.com/IntelRealSense/librealsense/tar.gz/refs/tags/v2.48.0 -o librealsense.tar.gz; \
+RUN export LIBRS_VERSION=2.53.1; \
+    curl https://codeload.github.com/IntelRealSense/librealsense/tar.gz/refs/tags/v${LIBRS_VERSION} -o librealsense.tar.gz; \
     tar -zxf librealsense.tar.gz; \
     rm librealsense.tar.gz; \
-    ln -s /usr/src/librealsense-2.48.0 /usr/src/librealsense
+    ln -s /usr/src/librealsense-${LIBRS_VERSION} /usr/src/librealsense
 
 RUN cd /usr/src/librealsense \
  && mkdir build && cd build \
@@ -78,25 +74,27 @@ RUN apt-get update \
     curl \
     software-properties-common \
  && rm -rf /var/lib/apt/lists/*
-
 # The following steps are based on: https://github.com/IntelRealSense/realsense-ros/tree/ros2-development
 ENV WS_DIR="/ros2_ws"
 WORKDIR ${WS_DIR}
 RUN apt-get update -y \
  && apt-get install -y \
     ros-${ROS_DISTRO}-rviz2 \
- && mkdir src \
- && cd src \
- && git clone https://github.com/IntelRealSense/realsense-ros.git -b 3.2.2 \
- && cd .. \
- && apt-get install -y python3-rosdep \
+ && mkdir src
+COPY docker/realsense-ros ./src
+COPY docker/multi_camera_launch.py /ros2_ws/src/realsense2_camera/launch
+COPY docker/depth_handler /ros2_ws/src/depth_handler
+RUN apt-get install -y python3-rosdep \
+ && apt-get update \
  && source /opt/ros/${ROS_DISTRO}/setup.bash \
  && rm /etc/ros/rosdep/sources.list.d/20-default.list \
  && rosdep init \
  && rosdep update \
  && rosdep install -i --from-path src --rosdistro ${ROS_DISTRO} --skip-keys=librealsense2 -y \
  && colcon build
-
+RUN sudo apt-get install python3-opencv
+RUN echo "source /ros2_ws/install/setup.bash" >> ~/.bashrc
+COPY docker/launch.sh .
+RUN chmod +x /ros2_ws/launch.sh
 ENV DEBIAN_FRONTEND=dialog
-
-# CMD [ "realsense-viewer" ]
+ENTRYPOINT ["/ros2_ws/launch.sh"]

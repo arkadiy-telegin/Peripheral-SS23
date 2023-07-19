@@ -9,6 +9,7 @@
 3. try copying realsense repo instead of cloning -> make changes outside of docker image
 
 ## Following launch file works:
+
 ### Lower latency achieved with following launch file
 ```
 # Copyright 2023 Intel Corporation. All Rights Reserved.
@@ -43,6 +44,7 @@ configurable_parameters = [{'name': 'camera_name',                  'default': '
                            {'name': 'json_file_path',               'default': "''", 'description': 'allows advanced configuration'},
                            {'name': 'log_level',                    'default': 'info', 'description': 'debug log level [DEBUG|INFO|WARN|ERROR|FATAL]'},
                            {'name': 'output',                       'default': 'screen', 'description': 'pipe node output [screen|log]'},
+
                            {'name': 'depth_module.profile',         'default': '424,240,15', 'description': 'depth module profile'},                           
                            {'name': 'enable_depth',                 'default': 'true', 'description': 'enable depth stream'},
                            {'name': 'rgb_camera.profile',           'default': '424,240,6', 'description': 'color image width'},

@@ -1,0 +1,17 @@
+version: '3.9'
+
+services:
+    realsense_ros2:
+      extends:
+        file: docker-compose-gui-nvidia.yml
+        service: realsense_ros2
+    ros-unity:
+        image: foxy_unity:latest
+        command: /home/user/dev_ws/scripts/01_start_tcp_endpoint.sh
+        volumes: 
+            - /tmp/.X11-unix:/tmp/.X11-unix:rw
+            - /dev/dri:/dev/dri
+        network_mode: "host"
+        depends_on:
+            - realsense_ros2
+        tty: true
