@@ -17,15 +17,15 @@ class DepthSubscriber(Node):
         super().__init__('depth_subscriber')
         self.min_dis = None
         self.distance_pub = self.create_publisher(Float64, 'obstacle_distance', 1)
-        self.im_pub = self.create_publisher(Image, 'warn_image', 1)
+        self.im_pub = self.create_publisher(Image, 'warn_image_back', 1)
         self.depth_sub = self.create_subscription(
             Image,
-            '/camera1/depth/image_rect_raw',
+            '/camera_back/depth/image_rect_raw',
             self.get_nearest_point,
             3)
         self.rgb_sub = self.create_subscription(
             Image,
-            '/camera1/color/image_raw',
+            '/camera_back/color/image_raw',
             self.rgb_cam,
             3)
 
@@ -38,12 +38,10 @@ class DepthSubscriber(Node):
             depth_array = np.array(depth_image, dtype=np.float64)
             warning_msg = Float64()
             self.min_dis = float(np.min(depth_array[depth_array!=0]))
-            # self.get_logger().info(f'Min distance camera 1: {self.min_dis2}')
 
             if self.min_dis != None:
                 self.min_dis = self.min_dis
                 warning_msg.data = self.min_dis
-                # self.get_logger().info(f'Min distance of both cameras: {self.min_dis}')
                 self.distance_pub.publish(warning_msg)
             
         except CvBridgeError as e:

@@ -25,7 +25,7 @@
 import copy
 from launch import LaunchDescription
 import launch_ros.actions
-from launch.actions import IncludeLaunchDescription
+from launch.actions import IncludeLaunchDescription, DeclareLaunchArgument
 from launch.substitutions import LaunchConfiguration, ThisLaunchFileDir
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 import sys
@@ -33,7 +33,7 @@ import pathlib
 sys.path.append(str(pathlib.Path(__file__).parent.absolute()))
 import rs_launch
 
-local_parameters = [{'name': 'camera_name1', 'default': 'camera1', 'description': 'camera unique name'},
+local_parameters = [{'name': 'camera_name1', 'default': 'camera_back', 'description': 'camera unique name'},
                     {'name': 'camera_name2', 'default': 'camera2', 'description': 'camera unique name'},
                    ]
 
@@ -58,11 +58,11 @@ def generate_launch_description():
         [
         IncludeLaunchDescription(
             PythonLaunchDescriptionSource([ThisLaunchFileDir(), '/rs_launch.py']),
-            launch_arguments={'camera_name': 'camera2', "serial_no":"_829212071824"}.items(),
+            launch_arguments={'camera_name': 'camera_shoulder_left', "serial_no":"_829212071824"}.items(),
         ),
         IncludeLaunchDescription(
             PythonLaunchDescriptionSource([ThisLaunchFileDir(), '/rs_launch.py']),
-            launch_arguments={'camera_name': 'camera1', "serial_no":"_829212071844", "pointcloud.enable":"false"}.items(),
+            launch_arguments={'camera_name': 'camera_back', "serial_no":"_829212071844", "pointcloud.enable":"false"}.items(),
         ),
         launch_ros.actions.Node(
             package = "depth_handler",
@@ -70,6 +70,8 @@ def generate_launch_description():
         ),
         launch_ros.actions.Node(
             package = "depth_handler",
-            executable = "pcd_subscriber"
+            executable = "pcd_subscriber",
+            name = 'pointcloud_shoulder_left',
+            parameters = [{'camera_side': 'left'}]
         ),
     ])

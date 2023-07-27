@@ -18,6 +18,9 @@ class DepthSubscriber(Node):
 
         super().__init__('pcd_subscriber')
 
+        self.declare_parameter('camera_side', 'default_value')
+        self.camera_side = self.get_parameter('camera_side').get_parameter_value().string_value
+        self.pointcloud_name = 'camera_shoulder_' + self.camera_side +'/depth/color/points'
         self.threshold = 0.4
         self.min_threshold = 0.1
         self.a,self.b,self.c,self.d = self.parametrize_plane()
@@ -26,13 +29,12 @@ class DepthSubscriber(Node):
         self.rot_z = None
         self.elbow_angle = None
 
-        self.pcd_pub = self.create_publisher(PointCloud2, 'warn_pcd', 1)
-        self.env_pub = self.create_publisher(PointCloud2, 'env_pcd', 1)
-        self.arm_pub = self.create_publisher(PointCloud2, 'arm_pcd', 1)
-        self.marker_pub = self.create_publisher(Marker, 'marker', 1)
+        self.pcd_pub = self.create_publisher(PointCloud2, self.camera_side + '_warn_pcd', 1)
+        self.env_pub = self.create_publisher(PointCloud2, self.camera_side + '_env_pcd', 1)
+        self.arm_pub = self.create_publisher(PointCloud2, self.camera_side + '_arm_pcd', 1)
         self.depth_sub = self.create_subscription(
             PointCloud2,
-            '/camera2/depth/color/points',
+            self.pointcloud_name,
             self.get_close_points_to_line,          # If you want to parametrize arm with plane, use self.get_close_point_to_plane
             3)
         self.jointstatesub = self.create_subscription(
@@ -58,7 +60,7 @@ class DepthSubscriber(Node):
 
             header = Header()
             header.stamp = self.get_clock().now().to_msg()
-            header.frame_id = 'camera2_link'
+            header.frame_id = self.camera_side + '_link'
             if self.points[pub_indices,:].size != 0:
                 pc_pub = pc2.create_cloud_xyz32(header, self.points[pub_indices,:])
                 self.pcd_pub.publish(pc_pub)
@@ -194,7 +196,7 @@ class DepthSubscriber(Node):
         # Publish
         header = Header()
         header.stamp = self.get_clock().now().to_msg()
-        header.frame_id = 'camera2_color_optical_frame'
+        header.frame_id = 'camera_shoulder_' + self.camera_side + '_color_optical_frame'
         # Publish arm point cloud
         if np.size(arm_points) != 0:
             arm_pub = pc2.create_cloud_xyz32(header, arm_points)
