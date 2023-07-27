@@ -8,6 +8,7 @@ services:
     tty: true
     volumes:
       - /dev:/dev
+    network_mode: "host"
     device_cgroup_rules:
       - 'c 81:* rmw'
       - 'c 189:* rmw'

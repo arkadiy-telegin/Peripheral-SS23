@@ -21,7 +21,8 @@ setup(
     entry_points={
         'console_scripts': [
             'depth_subscriber = depth_handler.depth_subscriber:main',
-            'pcd_subscriber = depth_handler.pcd_subscriber:main'
+            'pcd_subscriber = depth_handler.pcd_subscriber:main', 
+            'joint_plotter = depth_handler.joint_plotter:main'
         ],
     },
 )

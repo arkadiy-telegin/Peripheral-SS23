@@ -50,26 +50,15 @@ class DepthSubscriber(Node):
             print(e)
 
     def rgb_cam(self, msg):
-
-
+        
+        # Publish an image that gradually changes color as an object gets closer
         rgb_arr = bridge.imgmsg_to_cv2(msg)
         red_img  = np.full(np.shape(rgb_arr), (255,0,0), np.uint8)
-        # if self.min_dis != None and self.min_dis < 200:
-        #     rgb_arr = cv.addWeighted(rgb_arr, 0.4, red_img, 0.6, 0)
-        #     self.rgb_image = bridge.cv2_to_imgmsg(rgb_arr)
 
-        # elif self.min_dis != None and self.min_dis < 300:
-        #     rgb_arr = cv.addWeighted(rgb_arr, 0.6, red_img, 0.4, 0)
-        #     self.rgb_image = bridge.cv2_to_imgmsg(rgb_arr)
-
-        # elif self.min_dis != None and self.min_dis < 400:
-        #     rgb_arr = cv.addWeighted(rgb_arr, 0.8, red_img, 0.2, 0)
-        #     self.rgb_image = bridge.cv2_to_imgmsg(rgb_arr)
         if self.min_dis != None and self.min_dis < 400:
             weight = -3*self.min_dis/1000 + 1.2
             rgb_arr = cv.addWeighted(rgb_arr, 1-weight, red_img, weight, 0)
             self.rgb_image = bridge.cv2_to_imgmsg(rgb_arr)
-            
         else:
             self.rgb_image = msg
             
