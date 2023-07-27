@@ -52,7 +52,7 @@ In order to make it run with three cameras:
 
     - Find out the serial number of the new camera 
 
-    - Change multi_camera_launch.py to following launch file with new serial number in line 63:
+    - Change multi_camera_launch.py to following launch file with new serial number in line 63 and rebuild:
 ```
 # Copyright 2023 Intel Corporation. All Rights Reserved.
 #
