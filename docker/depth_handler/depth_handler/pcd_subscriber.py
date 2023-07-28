@@ -1,7 +1,7 @@
 import rclpy
 from rclpy.node import Node
 
-from std_msgs.msg import Header
+from std_msgs.msg import Header, Float32
 from sensor_msgs.msg import Image, PointCloud2, JointState
 import sensor_msgs_py.point_cloud2 as pc2
 from visualization_msgs.msg import Marker
@@ -31,6 +31,7 @@ class DepthSubscriber(Node):
         self.elbow_angle = None
 
         self.pcd_pub = self.create_publisher(PointCloud2, self.camera_side + '_warn_pcd', 1)
+        # self.min_distance_pub = self.create_publisher(Float32, self.camera_side + '_minimal_distance', 1)
         self.env_pub = self.create_publisher(PointCloud2, self.camera_side + '_env_pcd', 1)
         self.arm_pub = self.create_publisher(PointCloud2, self.camera_side + '_arm_pcd', 1)
         self.depth_sub = self.create_subscription(
@@ -107,12 +108,12 @@ class DepthSubscriber(Node):
         # Rotate the to world coordinate frame
         self.points = self.points @ rot_camera
         # Remove points belonging to floor
-        self.points = self.points[self.points[:,1]<1.10]
+        self.points = self.points[self.points[:,1]<0.9]
         # Remove points in a distance further than 1.5m
         self.calc_distance()
         mask = self.distances < self.threshold 
         indices = np.where(mask)
-        self.points = self.points[indices,:]
+        self.points = np.squeeze(self.points[indices,:])
 
         ## Parametrize the upper arm with initial point and vector n 
         if self.rot_x is not None and self.rot_y is not None and self.rot_z is not None:
@@ -178,7 +179,7 @@ class DepthSubscriber(Node):
         # Idea: Rotate a vector of lenght radius perpendicular to normal,
         # at end of each vector add a point
         for j in range(angular_steps):
-                # Roddrigues formula for rotation of vector v_p around vector n
+            # Roddrigues formula for rotation of vector v_p around vector n
             v_p_list.append(v_p * np.cos(np.pi*2/angular_steps*(j+1)) + np.cross(n, v_p) * np.sin(np.pi*2/angular_steps*(j+1)) + n * np.dot(n,v_p) * (1-np.cos(np.pi*2/angular_steps*(j+1))))
             v_e_p_list.append(v_e_p * np.cos(np.pi*2/angular_steps*(j+1)) + np.cross(n_elbow, v_e_p) * np.sin(np.pi*2/angular_steps*(j+1)) + n_elbow * np.dot(n_elbow,v_e_p) * (1-np.cos(np.pi*2/angular_steps*(j+1))))
         for i in range(num_steps):
@@ -209,6 +210,7 @@ class DepthSubscriber(Node):
         if self.points[outer_mask,:].size != 0:
             env_pcd = pc2.create_cloud_xyz32(header, self.points[outer_mask,:])
             self.env_pub.publish(env_pcd)
+        # self.min_distance_pub.publish(min(d,d2))
 
 
     def get_joint_states(self, msg):
