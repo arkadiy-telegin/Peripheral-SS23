@@ -21,7 +21,8 @@ class DepthSubscriber(Node):
         self.declare_parameter('camera_side', 'default_value')
         self.camera_side = self.get_parameter('camera_side').get_parameter_value().string_value
         self.pointcloud_name = 'camera_shoulder_' + self.camera_side +'/depth/color/points'
-        self.threshold = 0.4
+
+        self.threshold = 1.5
         self.min_threshold = 0.1
         self.a,self.b,self.c,self.d = self.parametrize_plane()
         self.rot_x = None
@@ -107,8 +108,11 @@ class DepthSubscriber(Node):
         self.points = self.points @ rot_camera
         # Remove points belonging to floor
         self.points = self.points[self.points[:,1]<1.10]
-
-
+        # Remove points in a distance further than 1.5m
+        self.calc_distance()
+        mask = self.distances < self.threshold 
+        indices = np.where(mask)
+        self.points = self.points[indices,:]
 
         ## Parametrize the upper arm with initial point and vector n 
         if self.rot_x is not None and self.rot_y is not None and self.rot_z is not None:
@@ -176,7 +180,7 @@ class DepthSubscriber(Node):
         for j in range(angular_steps):
                 # Roddrigues formula for rotation of vector v_p around vector n
             v_p_list.append(v_p * np.cos(np.pi*2/angular_steps*(j+1)) + np.cross(n, v_p) * np.sin(np.pi*2/angular_steps*(j+1)) + n * np.dot(n,v_p) * (1-np.cos(np.pi*2/angular_steps*(j+1))))
-            v_e_p_list.append(v_e_p * np.cos(np.pi*2/angular_steps*(j+1)) + np.cross(n, v_e_p) * np.sin(np.pi*2/angular_steps*(j+1)) + n * np.dot(n,v_e_p) * (1-np.cos(np.pi*2/angular_steps*(j+1))))
+            v_e_p_list.append(v_e_p * np.cos(np.pi*2/angular_steps*(j+1)) + np.cross(n_elbow, v_e_p) * np.sin(np.pi*2/angular_steps*(j+1)) + n_elbow * np.dot(n_elbow,v_e_p) * (1-np.cos(np.pi*2/angular_steps*(j+1))))
         for i in range(num_steps):
             p_current = p + float(arm_d/num_steps*i)*n
             p_e_current = p_u + float(elbow_d/num_steps*i)*n_elbow
@@ -211,7 +215,7 @@ class DepthSubscriber(Node):
         self.rot_x = -msg.position[1]
         self.rot_y = -msg.position[2]
         self.rot_z = msg.position[0]
-        self.elbow_angle = -msg.position[3]
+        self.elbow_angle = -msg.position[3] - msg.position[4]
         # self.get_logger().info(f'My log message {self.rot_x}')
 
 
