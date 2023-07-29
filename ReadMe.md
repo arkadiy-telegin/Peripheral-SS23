@@ -14,6 +14,8 @@ This repository contains a Docker and all the documentation required to launch a
 
 In order to make it work with Nvidia Jetson Orin/Nano, librealsense has to be built from source (refer to Dockerfile).
 
+On the robot everything is installed and a server can be run to start on boot up under the name of peripheral.service
+
 ## 1. Creating a Docker
 There are two different approaches for creating a Docker for a Realsense camera, one uses existing **Debian packages** while the other performs a full **compilation from source**. It is then important to mount `/dev` as a volume so that the Docker can access the hardware.
 
