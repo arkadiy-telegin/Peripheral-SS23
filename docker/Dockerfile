@@ -84,6 +84,7 @@ RUN apt-get update -y \
 COPY docker/realsense-ros ./src
 COPY docker/multi_camera_launch.py /ros2_ws/src/realsense2_camera/launch
 COPY docker/depth_handler /ros2_ws/src/depth_handler
+COPY docker/proximity_monitor /ros2_ws/src/proximity_monitor
 RUN apt-get install -y python3-rosdep \
  && apt-get update \
  && source /opt/ros/${ROS_DISTRO}/setup.bash \
