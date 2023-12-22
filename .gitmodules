@@ -1,3 +1,7 @@
 [submodule "docker/realsense-ros"]
 	path = docker/realsense-ros
 	url = https://github.com/juandelos/realsense-ros.git
+
+[submodule "docker/proximity-warning"]
+	path = docker/proximity-warning
+	url = https://github.com/arkadiy-telegin/proximity-warning.git
