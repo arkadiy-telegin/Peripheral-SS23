@@ -64,14 +64,22 @@ def generate_launch_description():
             PythonLaunchDescriptionSource([ThisLaunchFileDir(), '/rs_launch.py']),
             launch_arguments={'camera_name': 'camera_back', "serial_no":"_829212071844", "pointcloud.enable":"false"}.items(),
         ),
+        # launch_ros.actions.Node(
+        #     package = "depth_handler",
+        #     executable = "depth_subscriber"
+        # ),
+        # launch_ros.actions.Node(
+        #     package = "depth_handler",
+        #     executable = "pcd_subscriber",
+        #     name = 'pointcloud_shoulder_left',
+        #     parameters = [{'camera_side': 'left'}]
+        # ),
         launch_ros.actions.Node(
-            package = "depth_handler",
-            executable = "depth_subscriber"
-        ),
-        launch_ros.actions.Node(
-            package = "depth_handler",
-            executable = "pcd_subscriber",
-            name = 'pointcloud_shoulder_left',
-            parameters = [{'camera_side': 'left'}]
+            package = "proximity_monitor",
+            executable = "proximity_monitor",
+            name = 'proximity_monitor',
+            parameters = [{'first_camera_name': 'camera_shoulder_left'},
+                          {'second_camera_name': 'camera_back'},
+                          {'threshold': 1.0}]
         ),
     ])
