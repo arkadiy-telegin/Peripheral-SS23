@@ -80,6 +80,6 @@ def generate_launch_description():
             name = 'proximity_monitor',
             parameters = [{'first_camera_name': 'camera_shoulder_left'},
                           {'second_camera_name': 'camera_back'},
-                          {'threshold': 1.0}]
+                          {'threshold': 0.2}]
         ),
     ])
