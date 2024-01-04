@@ -33,8 +33,8 @@ import pathlib
 sys.path.append(str(pathlib.Path(__file__).parent.absolute()))
 import rs_launch
 
-local_parameters = [{'name': 'camera_name1', 'default': 'camera_back', 'description': 'camera unique name'},
-                    {'name': 'camera_name2', 'default': 'camera2', 'description': 'camera unique name'},
+local_parameters = [{'name': 'camera_name1', 'default': 'camera_left', 'description': 'camera unique name'},
+                    # {'name': 'camera_name2', 'default': 'camera2', 'description': 'camera unique name'},
                    ]
 
 def set_configurable_parameters(local_params):
@@ -50,20 +50,25 @@ def duplicate_params(general_params, posix):
 
 def generate_launch_description():
     params1 = duplicate_params(rs_launch.configurable_parameters, '1')
-    params2 = duplicate_params(rs_launch.configurable_parameters, '2')
+    # params2 = duplicate_params(rs_launch.configurable_parameters, '2')
     return LaunchDescription(
         rs_launch.declare_configurable_parameters(local_parameters) +
         rs_launch.declare_configurable_parameters(params1) + 
-        rs_launch.declare_configurable_parameters(params2) + 
+        # rs_launch.declare_configurable_parameters(params2) + 
         [
         IncludeLaunchDescription(
             PythonLaunchDescriptionSource([ThisLaunchFileDir(), '/rs_launch.py']),
-            launch_arguments={'camera_name': 'camera_shoulder_left', "serial_no":"_829212071824"}.items(),
+            launch_arguments={
+                'camera_name': 'camera_left', 
+                "serial_no":"_829212071824",
+                'depth_module.profile': '424,240,5',
+                'rgb_camera.profile': '424,240,5',
+            }.items(),
         ),
-        IncludeLaunchDescription(
-            PythonLaunchDescriptionSource([ThisLaunchFileDir(), '/rs_launch.py']),
-            launch_arguments={'camera_name': 'camera_back', "serial_no":"_829212071844", "pointcloud.enable":"false"}.items(),
-        ),
+        # IncludeLaunchDescription(
+        #     PythonLaunchDescriptionSource([ThisLaunchFileDir(), '/rs_launch.py']),
+        #     launch_arguments={'camera_name': 'camera_back', "serial_no":"_829212071844", "pointcloud.enable":"false"}.items(),
+        # ),
         # launch_ros.actions.Node(
         #     package = "depth_handler",
         #     executable = "depth_subscriber"
@@ -77,9 +82,15 @@ def generate_launch_description():
         launch_ros.actions.Node(
             package = "proximity_monitor",
             executable = "proximity_monitor",
-            name = 'proximity_monitor',
-            parameters = [{'first_camera_name': 'camera_shoulder_left'},
-                          {'second_camera_name': 'camera_back'},
+            name = 'proximity_monitor_left',
+            parameters = [{'camera_name': 'camera_left'},
                           {'threshold': 0.2}]
         ),
+        # launch_ros.actions.Node (
+        #     package = "proximity_monitor",
+        #     executable = "proximity_monitor",
+        #     name = 'proximity_monitor_back',
+        #     parameters = [{'camera_name': 'camera_back'},
+        #                   {'threshold': 0.2}]
+        # ),
     ])
