@@ -39,7 +39,7 @@ class ProximityMonitorNode(Node):
 
         self.get_logger().info(f'Listening for the camera on /{self.camera_name}/depth/image_rect_raw')
 
-        self.last_warning = None
+        self.last_warning = 0.0
         self.last_proximity = None
 
         self.timer = self.create_timer(0.025, self.publish_warning)  # 40 Hz
@@ -71,9 +71,6 @@ class ProximityMonitorNode(Node):
             self.threshold
         ]
         self.warning_publisher.publish(warning_msg)
-
-        # self.last_warning = None
-        # self.last_proximity = None
 
     def parameters_callback(self, params):
         for param in params:
