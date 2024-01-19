@@ -59,16 +59,20 @@ def generate_launch_description():
         IncludeLaunchDescription(
             PythonLaunchDescriptionSource([ThisLaunchFileDir(), '/rs_launch.py']),
             launch_arguments={
-                'camera_name': 'camera_left', 
+                'camera_name': 'camera_back_top', 
                 "serial_no":"_829212071824",
-                'depth_module.profile': '424,240,5',
-                'rgb_camera.profile': '424,240,5',
+                'depth_module.profile': '424x240x6',
+                'rgb_camera.profile': '320x180x6',
             }.items(),
         ),
-        # IncludeLaunchDescription(
-        #     PythonLaunchDescriptionSource([ThisLaunchFileDir(), '/rs_launch.py']),
-        #     launch_arguments={'camera_name': 'camera_back', "serial_no":"_829212071844", "pointcloud.enable":"false"}.items(),
-        # ),
+        IncludeLaunchDescription(
+            PythonLaunchDescriptionSource([ThisLaunchFileDir(), '/rs_launch.py']),
+            launch_arguments={
+                'camera_name': 'camera_back_bottom', 
+                "serial_no":"_829212071844",
+                'depth_module.profile': '424x240x6 ',
+                'rgb_camera.profile': '320x180x6',}.items(),
+        ),
         # launch_ros.actions.Node(
         #     package = "depth_handler",
         #     executable = "depth_subscriber"
@@ -82,15 +86,15 @@ def generate_launch_description():
         launch_ros.actions.Node(
             package = "proximity_monitor",
             executable = "proximity_monitor",
-            name = 'proximity_monitor_left',
-            parameters = [{'camera_name': 'camera_left'},
+            name = 'proximity_monitor_top',
+            parameters = [{'camera_name': 'camera_back_top'},
                           {'threshold': 0.2}]
         ),
-        # launch_ros.actions.Node (
-        #     package = "proximity_monitor",
-        #     executable = "proximity_monitor",
-        #     name = 'proximity_monitor_back',
-        #     parameters = [{'camera_name': 'camera_back'},
-        #                   {'threshold': 0.2}]
-        # ),
+        launch_ros.actions.Node (
+            package = "proximity_monitor",
+            executable = "proximity_monitor",
+            name = 'proximity_monitor_bottom',
+            parameters = [{'camera_name': 'camera_back_bottom'},
+                          {'threshold': 0.2}]
+        ),
     ])

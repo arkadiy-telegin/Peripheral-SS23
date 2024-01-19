@@ -2,10 +2,10 @@ import rclpy
 from rclpy.node import Node
 from rcl_interfaces.msg import SetParametersResult
 from std_msgs.msg import Float32MultiArray
-from sensor_msgs.msg import Image
+from sensor_msgs.msg import Image, CompressedImage
 # from proximity_monitor.msg import ProximityWarning
 
-import cv2 as cv
+import cv2
 from cv_bridge import CvBridge, CvBridgeError
 import numpy as np
 
@@ -56,6 +56,14 @@ class ProximityMonitorNode(Node):
     def camera_callback(self, data):
         self.last_warning, self.last_proximity = self.process_camera_data(data)
         # self.get_logger().debug(f'Proximity: {self.last_proximity}, Warning: {self.last_warning}')
+        # cv_img = bridge.imgmsg_to_cv2(data, desired_encoding='passthrough')
+        # compressed_img = cv2.imencode('.jpg', cv_img)[1].tostring()
+        # compressed_msg = CompressedImage()
+        # compressed_msg.header = data.header
+        # compressed_msg.format = "jpeg"
+        # compressed_msg.data = compressed_img
+        # self.get_logger().info(f'Publishing image')
+        # self.image_publisher.publish(compressed_msg)
 
     def publish_warning(self):
         warning_msg = Float32MultiArray()
