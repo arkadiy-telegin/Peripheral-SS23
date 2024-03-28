@@ -88,13 +88,13 @@ def generate_launch_description():
             executable = "proximity_monitor",
             name = 'proximity_monitor_top',
             parameters = [{'camera_name': 'camera_back_top'},
-                          {'threshold': 0.2}]
+                          {'proximity_warning_threshold': 0.2}]
         ),
         launch_ros.actions.Node (
             package = "proximity_monitor",
             executable = "proximity_monitor",
             name = 'proximity_monitor_bottom',
             parameters = [{'camera_name': 'camera_back_bottom'},
-                          {'threshold': 0.2}]
+                          {'proximity_warning_threshold': 0.2}]
         ),
     ])
