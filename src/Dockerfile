@@ -86,10 +86,10 @@ RUN sudo apt-get install ros-humble-rmw-cyclonedds-cpp -y
 ENV RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
 RUN sudo apt-get install ros-humble-image-transport-plugins -y
 
-COPY docker/realsense-ros ./src
-COPY docker/multi_camera_launch.py /ros2_ws/src/realsense2_camera/launch
-COPY docker/depth_handler /ros2_ws/src/depth_handler
-COPY docker/proximity_monitor /ros2_ws/src/proximity_monitor
+COPY src/realsense-ros ./src
+COPY src/multi_camera_launch.py /ros2_ws/src/realsense2_camera/launch
+COPY src/depth_handler /ros2_ws/src/depth_handler
+COPY src/proximity_monitor /ros2_ws/src/proximity_monitor
 RUN apt-get install -y python3-rosdep \
  && apt-get update \
  && source /opt/ros/${ROS_DISTRO}/setup.bash \
@@ -100,7 +100,7 @@ RUN apt-get install -y python3-rosdep \
  && colcon build
 RUN sudo apt-get install python3-opencv
 RUN echo "source /ros2_ws/install/setup.bash" >> ~/.bashrc
-COPY docker/launch.sh .
+COPY src/launch.sh .
 RUN chmod +x /ros2_ws/launch.sh
 ENV DEBIAN_FRONTEND=dialog
 ENTRYPOINT ["/ros2_ws/launch.sh"]

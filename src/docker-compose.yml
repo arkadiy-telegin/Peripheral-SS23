@@ -3,7 +3,7 @@ services:
   realsense_ros2:
     build:
       context: ..
-      dockerfile: docker/Dockerfile
+      dockerfile: src/Dockerfile
       #target: librealsense
     tty: true
     volumes:
