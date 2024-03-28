@@ -1,11 +1,52 @@
+// See https://aka.ms/vscode-remote/devcontainer.json for format details.
 {
-  "name": "Docker for Intel Realsense with ROS 2",
-  "dockerComposeFile": [
-    "../docker/docker-compose-gui.yml" // Alternatives: "../docker/docker-compose-gui.yml", "../docker/docker-compose-gui-nvidia.yml"
-  ],
-  "service": "realsense_ros2",
-	"workspaceFolder": "/ros2_ws",
-  "shutdownAction": "stopCompose",
-  "extensions": [
-  ]
+	"dockerFile": "Dockerfile",
+	"build": {
+		"args": {
+			"WORKSPACE": "${containerWorkspaceFolder}/docker"
+		}
+	},
+	"remoteUser": "ros",
+	"runArgs": [
+		"--network=host",
+		"--cap-add=SYS_PTRACE",
+		"--security-opt=seccomp:unconfined",
+		"--security-opt=apparmor:unconfined",
+		"--volume=/tmp/.X11-unix:/tmp/.X11-unix",
+		"--volume=/mnt/wslg:/mnt/wslg",
+		"--ipc=host",
+		"--volume=/dev:/dev",
+		"--device-cgroup-rule=c 81:* rmw",
+		"--device-cgroup-rule=c 189:* rmw"
+		// uncomment to use intel iGPU
+		// "--device=/dev/dri"
+	],
+	"containerEnv": {
+		"DISPLAY": "${localEnv:DISPLAY}", // Needed for GUI try ":0" for windows
+		"WAYLAND_DISPLAY": "${localEnv:WAYLAND_DISPLAY}",
+		"XDG_RUNTIME_DIR": "${localEnv:XDG_RUNTIME_DIR}",
+		"PULSE_SERVER": "${localEnv:PULSE_SERVER}",
+		"LIBGL_ALWAYS_SOFTWARE": "1", // Needed for software rendering of opengl
+		"RMW_IMPLEMENTATION": "rmw_cyclonedds_cpp"
+	},
+	// Set *default* container specific settings.json values on container create.
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"althack.ament-task-provider",
+				"betwo.b2-catkin-tools",
+				"DotJoshJohnson.xml",
+				"ms-azuretools.vscode-docker",
+				"ms-iot.vscode-ros",
+				"ms-python.python",
+				"ms-vscode.cpptools",
+				"redhat.vscode-yaml",
+				"smilerobotics.urdf",
+				"streetsidesoftware.code-spell-checker",
+				"twxs.cmake",
+				"yzhang.markdown-all-in-one",
+				"zachflower.uncrustify"
+			]
+		}
+	}
 }
