@@ -6,7 +6,6 @@ from sensor_msgs.msg import Image
 
 from rcl_interfaces.srv import SetParameters
 
-import cv2
 from cv_bridge import CvBridge, CvBridgeError
 import numpy as np
 
@@ -78,7 +77,7 @@ class ProximityMonitorNode(Node):
                 self.get_logger().info(f'New proximity_warning_threshold set: {self.threshold}')
                 return SetParametersResult(successful=True)
         return SetParametersResult(successful=False)
-    
+
     def nearest_point_distance(self, ros_image):
         try:
             depth_image = bridge.imgmsg_to_cv2(ros_image, desired_encoding='passthrough')
@@ -87,6 +86,7 @@ class ProximityMonitorNode(Node):
             return min_distance * 0.001  # Convert to meters
         except CvBridgeError as e:
             self.get_logger().error(e)
+
 
 def main(args=None):
     rclpy.init(args=args)

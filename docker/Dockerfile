@@ -81,9 +81,11 @@ RUN apt-get update -y \
  && apt-get install -y \
     ros-${ROS_DISTRO}-rviz2 \
  && mkdir src
+
 RUN sudo apt-get install ros-humble-rmw-cyclonedds-cpp -y
 ENV RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
 RUN sudo apt-get install ros-humble-image-transport-plugins -y
+
 COPY docker/realsense-ros ./src
 COPY docker/multi_camera_launch.py /ros2_ws/src/realsense2_camera/launch
 COPY docker/depth_handler /ros2_ws/src/depth_handler

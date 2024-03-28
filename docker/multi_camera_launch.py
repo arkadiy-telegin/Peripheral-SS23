@@ -62,7 +62,7 @@ def generate_launch_description():
                 'camera_name': 'camera_back_top', 
                 "serial_no":"_829212071824",
                 'depth_module.profile': '424x240x6',
-                'rgb_camera.profile': '320x180x6',
+                'rgb_camera.profile': '320x240x6',
             }.items(),
         ),
         IncludeLaunchDescription(
@@ -71,7 +71,7 @@ def generate_launch_description():
                 'camera_name': 'camera_back_bottom', 
                 "serial_no":"_829212071844",
                 'depth_module.profile': '424x240x6 ',
-                'rgb_camera.profile': '320x180x6',}.items(),
+                'rgb_camera.profile': '320x240x6',}.items(),
         ),
         # launch_ros.actions.Node(
         #     package = "depth_handler",
