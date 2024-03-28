@@ -2,8 +2,9 @@ import rclpy
 from rclpy.node import Node
 from rcl_interfaces.msg import SetParametersResult
 from std_msgs.msg import Float32MultiArray
-from sensor_msgs.msg import Image, CompressedImage
-# from proximity_monitor.msg import ProximityWarning
+from sensor_msgs.msg import Image
+
+from rcl_interfaces.srv import SetParameters
 
 import cv2
 from cv_bridge import CvBridge, CvBridgeError
@@ -31,11 +32,11 @@ class ProximityMonitorNode(Node):
 
         # Publishers and Subscribers
         self.warning_topic = f'/roboy/pinky/sensing/{self.camera_name}/proximity_warning'
-
         self.warning_publisher = self.create_publisher(Float32MultiArray, self.warning_topic, 10)
-        # self.second_warning_publisher = self.create_publisher(Float32MultiArray, self.second_warning_topic, 10)
 
         self.camera_subscriber = self.create_subscription(Image, f'/{self.camera_name}/depth/image_rect_raw', self.camera_callback, 10)
+        self.parameter_client = self.create_client(SetParameters,
+                                                   f'/{self.camera_name}/set_parameters')
 
         self.get_logger().info(f'Listening for the camera on /{self.camera_name}/depth/image_rect_raw')
 
@@ -49,29 +50,19 @@ class ProximityMonitorNode(Node):
 
     def process_camera_data(self, data):
         proximity = self.nearest_point_distance(data)
-        # relative_proximity = proximity / self.threshold
         warning = 1.0 if proximity < self.threshold else 0.0
         return warning, proximity
 
     def camera_callback(self, data):
         self.last_warning, self.last_proximity = self.process_camera_data(data)
-        # self.get_logger().debug(f'Proximity: {self.last_proximity}, Warning: {self.last_warning}')
-        # cv_img = bridge.imgmsg_to_cv2(data, desired_encoding='passthrough')
-        # compressed_img = cv2.imencode('.jpg', cv_img)[1].tostring()
-        # compressed_msg = CompressedImage()
-        # compressed_msg.header = data.header
-        # compressed_msg.format = "jpeg"
-        # compressed_msg.data = compressed_img
-        # self.get_logger().info(f'Publishing image')
-        # self.image_publisher.publish(compressed_msg)
 
     def publish_warning(self):
         warning_msg = Float32MultiArray()
 
         if self.last_warning:
-            self.get_logger().info(f'Publishing warning: {self.last_proximity}')
+            self.get_logger().info(f'Publishing warning: {self.last_proximity}', throttle_duration_sec=1.0)
         else:
-            self.get_logger().debug(f'Publishing NO warning')
+            self.get_logger().debug(f'Publishing NO warning', throttle_duration_sec=1.0)
 
         warning_msg.data = [
             self.last_warning,
