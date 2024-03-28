@@ -1,9 +1,9 @@
 // See https://aka.ms/vscode-remote/devcontainer.json for format details.
 {
-	"dockerFile": "Dockerfile",
+	"dockerFile": "../docker/Dockerfile",
 	"build": {
 		"args": {
-			"WORKSPACE": "${containerWorkspaceFolder}/docker"
+			"WORKSPACE": "${containerWorkspaceFolder}"
 		}
 	},
 	"remoteUser": "ros",
