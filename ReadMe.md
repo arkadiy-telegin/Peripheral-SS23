@@ -1,7 +1,9 @@
 
 # Docker for Intel Realsense cameras on ROS 2
 
-Author: Juan de los Rios(March 2023 - July 2023)
+Author: Juan de los Rios (March 2023 - July 2023)
+
+Author \[proximity-monitor\]: Arkadiy Telegin (October 2023 - April 2024)
 
 Fork from [https://github.com/2b-t](https://github.com/2b-t)
 
@@ -28,6 +30,13 @@ In the `docker-compose.yml` this is done with the options:
       - 'c 81:* rmw'
       - 'c 189:* rmw'
 ```
+
+#### 1.1 Development Docker container
+For the ease of the development using VSCode, a similar Dockerfile is provided along `devcontainer.json` launching instruction. The difference with the main Dockerfile consists of mounting all the source files instead of copying them into the container image. Using devconainer allows code-completion within VSCode. Additionally all the changes reflected in the source code will be immediately available for building and running the code inside of the container without the need of rebuilding the docker image. This allows for much faster development and testing iterations.
+
+To build and launch the container development environment, please follow [these instructions (subsection "Open it in vscode")](https://github.com/athackst/vscode_ros2_workspace#open-it-in-vscode). After this, you'll have access to the development environment and terminal executing inside of the running container.
+
+To learn more about VSCode's devcontainers, please consult the [official documentation](https://code.visualstudio.com/docs/devcontainers/containers)
 
 ## 2. Launching
 Allow the container to display contents on your host machine by typing
