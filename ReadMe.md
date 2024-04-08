@@ -18,6 +18,14 @@ In order to make it work with Nvidia Jetson Orin/Nano, librealsense has to be bu
 
 On the robot everything is installed and a server can be run to start on boot up under the name of peripheral.service
 
+### 0.1 Proximity monitor
+The latest addition to the repository is the `proximity_monitor` package. The ROS2 node defined in `proximity_monitor.py` reads the IntelRealsense camera feed, calculates the proximity of the closest object to the camera, and publishes a message to `/roboy/pinky/sensing/<CAMERA_NAME>/proximity_warning` topic at 40Hz. The published message is a [Float32MultiArray](https://github.com/ros2/common_interfaces/blob/rolling/std_msgs/msg/Float32MultiArray.msg) that contains:
+- Warning: `1.0` if the proximity < `proximity_warning_threshold` and `0.0` otherwise
+- Proximity: distance to the nearest point seen by the camera (meters)
+- Current value of `proximity_warning_threshold` (meters)
+
+For configuration options of the proximity monitor please see section ["Proximity monitor usage"](#4-proximity-monitor-usage).
+
 ## 1. Creating a Docker
 There are two different approaches for creating a Docker for a Realsense camera, one uses existing **Debian packages** while the other performs a full **compilation from source**. It is then important to mount `/dev` as a volume so that the Docker can access the hardware.
 
@@ -157,7 +165,38 @@ def generate_launch_description():
     ])
 ```
 
-## 4. Debugging
+## 4. Proximity monitor usage
+The included `proximity-monitor` package declares the following configuration options:
+- `camera_name` \[Default: `camera`\]
+- `proximity_warning_threshold` \[Default: `0.2`\]
+
+Additionally, the `proximity_warning_threshold` parameter can be reconfigured dynamically during the runtime. For instructions how to dynamically reconfiure ROS2 parameters, please consult [the official documentation](https://docs.ros.org/en/humble/How-To-Guides/Using-ros2-param.html)
+
+The launch file `multi_camera_launch.py` provided by the package features a working launch configuration for two RealSense cameras.
+
+The following is a sample of ROS2 `LaunchDescription` using a camera named `camera1` with a warning threshold of 0.2 meters. You can adjust it according to your setup and complete it with the launch boilerplate as seen in `multi_camera_launch.py` to create your own ROS2 launch file that will start a RealSense ROS2 node along with the proximity monitor:
+```python
+LaunchDescription([
+    IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(realsense_launch_file),
+        launch_arguments={
+            'camera_name': 'camera1', 
+            "serial_no":"_829212071824",  # CHANGE THIS!
+            'depth_module.profile': '424x240x6',
+            'rgb_camera.profile': '320x240x6',
+        }.items(),
+    ),
+    launch_ros.actions.Node(
+        package = "proximity_monitor",
+        executable = "proximity_monitor",
+        name = 'proximity_monitor_1',
+        parameters = [{'camera_name': 'camera1'},
+                      {'proximity_warning_threshold': 0.2}]
+    ),
+])
+```
+
+## 5. Debugging
 
 The Intel Realsense driver has several serious flaws/bugs. Probably the main one is that it is **closely connected to the [kernel version of the Linux operating system](https://github.com/IntelRealSense/librealsense/issues/9360)**. If the Dockerfile above do not work then you are likely unlucky and it is an incompatible version of the kernel of your host system and you will either have to [downgrade your kernel](https://linuxhint.com/install-linux-kernel-ubuntu/) or switch to another Ubuntu version that is officially supported. Furthermore from time to time the software will give you cryptic error messages. For some restarting the corresponding software component might help, for others you will find a fix googling and with others you will have to learn to live.
 The Realsense is **pretty [picky about USB 3.x cables](https://github.com/IntelRealSense/librealsense/issues/2045)**. If your camera is detected via `rs-enumerate-devices`, you can see it `realsense-viewer` but can't output its video stream, then it might be that your cable lacks the bandwidth. Either you can try to turn down the resolution of the camera in the `realsense-viewer` or switch cable (preferably to one that is [already known to work](https://community.intel.com/t5/Items-with-no-label/long-USB-cable-for-realsense-D435i/m-p/694963)).
